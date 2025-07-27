@@ -38,8 +38,8 @@ services:
     command:
       [
         "--shardsvr", #запуск в режиме шардинга
-        "--replSet",
-        "shard1-1", #название шарда
+        "--replSet", #указание названия replica set
+        "shard1-1", #название replica set
         "--bind_ip_all",
         "--port",
         "27018"
@@ -62,8 +62,8 @@ services:
     command:
       [
         "--shardsvr", #запуск в режиме шардинга
-        "--replSet",
-        "shard1-2", #название шарда
+        "--replSet", #указание названия replica set
+        "shard1-2", #название replica set
         "--bind_ip_all", 
         "--port",
         "27019"

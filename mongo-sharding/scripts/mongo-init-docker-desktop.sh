@@ -62,7 +62,7 @@ db.helloDoc.countDocuments();
 exit(); 
 
 
-docker compose exec -T shadrd1-2 mongosh --port 27019
+docker compose exec -T shard1-2 mongosh --port 27019
 use somedb;
 db.helloDoc.countDocuments();
 exit();
