@@ -1,4 +1,4 @@
-name: sharding-repl-cache
+name: mongo-sharding-repl
 
 services:
   configSrv: #сервер конфигурации
@@ -9,7 +9,6 @@ services:
       - "27017:27017"
     networks:
       app-network:
-        ipv4_address: 173.17.0.101
     volumes:
       - config-data:/data/db
     command:
@@ -26,7 +25,6 @@ services:
       interval: 5s
       start_period: 10s
 
-
   shard1-1: #1-й шард 
     image: mongo:latest
     container_name: shard1-1
@@ -35,7 +33,6 @@ services:
       - "27018:27018"
     networks:
       app-network:
-        ipv4_address: 173.17.0.111
     volumes:
       - shard1-1-data:/data/db
     command:
@@ -60,7 +57,6 @@ services:
       - "27031:27031"
     networks:
       app-network:
-        ipv4_address: 173.17.0.112
     volumes:
       - shard1-1-a-data:/data/db
     command:
@@ -85,7 +81,6 @@ services:
       - "27032:27032"
     networks:
       app-network:
-        ipv4_address: 173.17.0.113
     volumes:
       - shard1-1-b-data:/data/db
     command:
@@ -110,7 +105,6 @@ services:
       - "27019:27019"
     networks:
       app-network:
-        ipv4_address: 173.17.0.121
     volumes:
       - shard1-2-data:/data/db
     command:
@@ -135,7 +129,6 @@ services:
       - "27041:27041"
     networks:
       app-network:
-        ipv4_address: 173.17.0.122
     volumes:
       - shard1-2-a-data:/data/db
     command:
@@ -160,7 +153,6 @@ services:
       - "27042:27042"
     networks:
       app-network:
-        ipv4_address: 173.17.0.123
     volumes:
       - shard1-2-b-data:/data/db
     command:
@@ -177,7 +169,6 @@ services:
       interval: 5s
       start_period: 10s
 
-
   mongos_router: #роутер
     image: mongo:latest
     container_name: mongos_router
@@ -186,7 +177,6 @@ services:
       - "27020:27020"
     networks:
       app-network:
-        ipv4_address: 173.17.0.102
     command:
       [
         "mongos", #обычная mongo в режиме роутера
@@ -202,93 +192,7 @@ services:
       start_period: 10s
 
 
-  redis_1:
-    image: "redis:latest"
-    container_name: redis_1
-    restart: always
-    ports:
-      - "6379"
-    volumes:
-      - redis_1_data:/data
-      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
-    command: [ "redis-server", "/usr/local/etc/redis/redis.conf" ]
-    networks:
-      app-network:
-        ipv4_address: 173.17.0.201
-
-  redis_2:
-    image: "redis:latest"
-    container_name: redis_2
-    restart: always
-    ports:
-      - "6379"
-    volumes:
-      - redis_2_data:/data
-      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
-    command: [ "redis-server", "/usr/local/etc/redis/redis.conf" ]
-    networks:
-      app-network:
-        ipv4_address: 173.17.0.202
-
-  redis_3:
-    image: "redis:latest"
-    container_name: redis_3
-    restart: always
-    ports:
-      - "6379"
-    volumes:
-      - redis_3_data:/data
-      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
-    command: [ "redis-server", "/usr/local/etc/redis/redis.conf" ]
-    networks:
-      app-network:
-        ipv4_address: 173.17.0.203
-
-  redis_4:
-    image: "redis:latest"
-    container_name: redis_4
-    restart: always
-    ports:
-      - "6379"
-    volumes:
-      - redis_4_data:/data
-      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
-    command: [ "redis-server", "/usr/local/etc/redis/redis.conf" ]
-    networks:
-      app-network:
-        ipv4_address: 173.17.0.204
-
-  redis_5:
-    image: "redis:latest"
-    container_name: redis_5
-    restart: always
-    ports:
-      - "6379"
-    volumes:
-      - redis_5_data:/data
-      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
-    command: [ "redis-server", "/usr/local/etc/redis/redis.conf" ]
-    networks:
-      app-network:
-        ipv4_address: 173.17.0.205
-
-  redis_6:
-    image: "redis:latest"
-    container_name: redis_6
-    restart: always
-    ports:
-      - "6379"
-    volumes:
-      - redis_6_data:/data
-      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
-    command: [ "redis-server", "/usr/local/etc/redis/redis.conf" ]
-    networks:
-      app-network:
-        ipv4_address: 173.17.0.206
-
-
   pymongo_api:
-    image: kazhem/pymongo_api:1.0.0
     container_name: pymongo_api
     build: 
       context: api_app
@@ -296,7 +200,6 @@ services:
     depends_on:
       - configSrv
       - mongos_router
-      - redis_1
     networks:
       app-network:
     ports:
@@ -304,16 +207,11 @@ services:
     environment:
       MONGODB_URL: "mongodb://mongos_router:27020"
       MONGODB_DATABASE_NAME: "somedb"
-      REDIS_URL: "redis://redis_2"
 
 
 networks:
   app-network:
     driver: bridge
-    ipam:
-      driver: default
-      config:
-        - subnet: 173.17.0.0/16
 
 volumes:
   config-data:
@@ -323,9 +221,3 @@ volumes:
   shard1-2-data:
   shard1-2-a-data:
   shard1-2-b-data:
-  redis_1_data: {}
-  redis_2_data: {}
-  redis_3_data: {}
-  redis_4_data: {}
-  redis_5_data: {}
-  redis_6_data: {}
